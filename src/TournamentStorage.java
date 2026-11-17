@@ -9,20 +9,13 @@ public class TournamentStorage {
   public static final String FILE_PATH = "data/tournament.txt";
   public static void save(Tournament t, String path) throws IOException {
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
+      out.println("FORMAT,SINGLE");
       out.println("BESTOF," + t.getBestOf());
-      for (Player p : t.getPlayers()) {
-        out.println("PLAYER," + p.getName() + "," + p.getWins() + "," + p.getLosses());
-      }
+      writePlayers(out, t.getPlayers());
       for (ArrayList<Match> round : t.getRounds()) {
         out.println("ROUND");
         for (Match m : round) {
-          String second = "";
-          if (m.isBye()) {
-            second = "BYE";
-          } else {
-            second = m.getPlayer2().getName();
-          }
-          out.println("MATCH," + m.getPlayer1().getName() + "," + second + "," + m.getGames1() + "," + m.getGames2() + "," + m.isPlayed());
+          writeMatch(out, m);
         }
       }
       if (t.isFinished()) {
@@ -75,11 +68,48 @@ public class TournamentStorage {
       }
       Player champion = null;
       if (championName != null) {
-        chamption = byName.get(championName);
+        champion = byName.get(championName);
       }
       return new Tournament(players, bestOf, rounds, champion);
+     }
+   }
+    //used writePlayers and writeMatch methods to avoid writing player and match lines 2x for roundrobin tournaments
+    private static void writePlayers(PrintWriter out, ArrayList<Player> players) {
+      for (Player p : players) {
+        out.println("PLAYER," + p.getName() + "," + p.getWins() + "," + p.getLosses());
+      }
     }
-}
-  
-          
-          
+    private static void writeMatch(PrintWriter out, Match m) {
+      String second = "BYE";
+      if (!m.isBye()) {
+        second = m.getPlayer2().getName();
+      }
+      out.println("MATCH," + m.getPlayer1().getName() + "," + second + "," + m.getGames1() + "," + m.getGames2() + "," + m.isPlayed());
+    }
+    public static void saveRoundRobin(RoundRobin rr, String path) throws IOException {
+      try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
+        out.println("FORMAT,ROUNDROBIN");
+        out.println("BESTOF," + rr.getBestOf());
+        writePlayers(out, rr.getPlayers());
+        out.println("ROUND");
+        for (Match m : rr.getMatches()) {
+          writeMatch(out, m);
+        }
+      }
+    }
+    //reads the first line to see which tournament format the file holds
+    public static String readFormat(String path) throws IOException {
+      try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+        String first = in.readLine();
+        if (first != null && first.equals("FORMAT,ROUNDROBIN")) {
+          return "ROUNDROBIN";
+        }
+        return "SINGLE";
+      }
+    }
+    public static RoundRobin loadRoundRobin(String path) throws IOException {
+      Tournament t = load(path);
+      //gets all matches in roundrobin format for ONE ROUND
+      return new RoundRobin(t.getPlayers(), t.getBestOf(), t.getRounds().get(0));
+    }
+  }
