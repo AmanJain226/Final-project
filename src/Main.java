@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class Main {
   private static final Scanner scanner = new Scanner(System.in);
   private static final ArrayList<Player> players = new ArrayList<>();
+  private static Tournament tournament;
   public static void main(String[] args) {
     boolean running = true;
     while (running) {
@@ -13,14 +14,18 @@ public class Main {
           addPlayer();
         case "2" -> 
           listPlayers();
-        case "3", "4", "5", "6" -> 
-          System.out.println("Coming soon(needs Tournament class).");
+        case "3" -> 
+          startSingleElimination();
+        case "4" -> 
+          System.out.println("Coming soon.");
+        case "5" -> 
+          enterScore();
+        case "6" ->
+          viewBracket();
         case "7" -> {
           System.out.println("Goodbye!");
           running = false;
         }
-        case "8" -> 
-          testMatch();
         default -> 
           System.out.println("Invalid choice. Enter 1-7.");
       }
@@ -63,42 +68,6 @@ public class Main {
       System.out.println((i+1) + ". " + players.get(i));
     }
   }
-  //Temporary method until later to test if Match.java works
-  private static void testMatch() {
-    if (players.size() < 2) {
-      System.out.println("Add at least 2 players first.");
-      return;
-    }
-    Player a = players.get(0);
-    Player b = players.get(1);
-    int bestOf = readInt("Best of (3 or 5): ");
-    Match match;
-    try {
-      match = new Match(a, b, bestOf);
-    } catch (IllegalArgumentException e) {
-      System.out.println(e.getMessage());
-      return;
-    }
-    while (!match.isPlayed()) {
-      int g1 = readInt("Games won by " + a.getName() + ": ");
-      int g2 = readInt("Games won by " + b.getName() + ": ");
-      try {
-        match.recordResult(g1, g2);
-      } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
-      }
-    }
-    Player winner = match.getWinner();
-    Player loser;
-    if (winner == a) {
-      loser = b;
-    } else {
-      loser = a;
-    }
-    winner.recordWin();
-    loser.recordLoss();
-    System.out.println("Winner: " + winner.getName());
-  }
   private static int readInt(String prompt) {
     while (true) {
       System.out.println(prompt);
@@ -109,4 +78,83 @@ public class Main {
       }
     }
   }
-}
+  private static void startSingleElimination() {
+    if (players.size() < 2) {
+      System.out.println("Add at least 2 players first.");
+      return;
+    }
+    int bestOf = readInt("Best of (3 or 5): ");
+    try {
+      tournament = new Tournament(players, bestOf);
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+      return;
+    }
+    System.out.println("Bracket generated!");
+    viewBracket();
+  }
+  private static void enterScore() {
+    if (tournament == null) {
+      System.out.println("No tournament started yet.");
+      return;
+    }
+    if (tournament.isFinished()) {
+      System.out.println("Tournament is over. Champion: " + tournament.getChampion().getName());
+      return;
+    }
+    ArrayList<Match> current = tournament.getCurrentRound();
+    System.out.println("Matches waiting for a score:");
+    for (int i = 0; i < current.size(); i++) {
+      Match m = current.get(i);
+      if (!m.isBye() && !m.isPlayed()) {
+        System.out.println((i + 1) + ". " + m.getPlayer1().getName() + " vs. " + m.getPlayer2().getName());
+      }
+    }
+    int index = readInt("Match number: ") - 1;
+    boolean recorded = false;
+    while (!recorded) {
+      int g1 = readInt("Games won by player 1: ");
+      int g2 = readInt("Games won by player 2: ");
+      try {
+        tournament.recordResult(index, g1, g2);
+        recorded = true;
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+        //bad match choice, returns to menu
+        if (e.getMessage().startsWith("No such") || e.getMessage().startsWith("That match")) {
+          return;
+        }
+      }
+    }
+    if (tournament.isFinished()) {
+      System.out.println("Champion: " + tournament.getChampion().getName());
+    }
+  }
+  private static void viewBracket() {
+    if (tournament == null) {
+      System.out.println("No tournament started yet.");
+      return;
+    }
+    ArrayList<ArrayList<Match>> rounds = tournament.getRounds();
+    for (int r = 0; r < rounds.size(); r++) {
+      System.out.println("Round " + (r + 1));
+      ArrayList<Match> matches = rounds.get(r);
+      for (int m = 0; m < matches.size(); m++) {
+        Match match = matches.get(m);
+        String line = "Match " + (m + 1) + ": " + match.getPlayer1().getName();
+        if (match.isBye()) {
+          line += " (bye)";
+        } else {
+          line += (" vs. " + match.getPlayer2().getName());
+          if (match.isPlayed()) {
+            line += (" [" + match.getGames1() + "-" + match.getGames2() + "]");
+          }
+        }
+        System.out.println(line);
+      }
+    }
+    if (tournament.isFinished()) {
+      System.out.println("Champion: " + tournament.getChampion().getName());
+    }
+  }
+} 
