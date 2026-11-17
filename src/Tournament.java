@@ -13,6 +13,15 @@ public class Tournament {
     this.bestOf = bestOf;
     rounds.add(buildRound(this.players));
   }
+  //second constructor for storing the records
+  public Tournament(ArrayList<Played> players, int bestOf, ArrayList<ArrayList<Match>> rounds, Player champion) {
+    this.players = new ArrayList<>(players);
+    this.bestOf = bestOf;
+    for (ArrayList<Match> round : rounds) {
+      this.rounds.add(rounds);
+    }
+    this.champion = champion;
+  }
   private ArrayList<Match> buildRound(ArrayList<Player> entries) {
     int n = entries.size();
     int size = 1;
@@ -77,6 +86,9 @@ public class Tournament {
   //which is why the last element is retrieved(most recent round added)
   public ArrayList<Match> getCurrentRound() {
     return rounds.get(rounds.size() - 1);
+  }
+  public ArrayList<Player> getPlayers() {
+    return players;
   }
   public ArrayList<ArrayList<Match>> getRounds() {
     return rounds;
