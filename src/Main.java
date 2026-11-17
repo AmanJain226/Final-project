@@ -1,11 +1,14 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 public class Main {
   private static final Scanner scanner = new Scanner(System.in);
   private static final ArrayList<Player> players = new ArrayList<>();
   private static Tournament tournament;
   public static void main(String[] args) {
     boolean running = true;
+    loadTournament();
     while (running) {
       printMenu();
       String choice = scanner.nextLine().trim();
@@ -48,6 +51,10 @@ public class Main {
     String name = scanner.nextLine().trim();
     if (name.isEmpty()) {
       System.out.println("Name can't be empty.");
+      return;
+    }
+    if (name.contains(",")) {
+      System.out.println("Names can't contain commas.");
       return;
     }
     for (Player p : players) {
@@ -155,6 +162,32 @@ public class Main {
     }
     if (tournament.isFinished()) {
       System.out.println("Champion: " + tournament.getChampion().getName());
+    }
+  }
+  private static void saveTournament() {
+    if (tournament == null) {
+      System.out.println("No tournament to save.");
+      return;
+    }
+    try {
+      TournamentStorage.save(tournament, TournamentStorage.FILE_PATH);
+      System.out.println("Saved to " + TournamentStorage.FILE_PATH);
+    } catch (IOException e) {
+      System.out.println("Could not save: " + e.getMessage());
+    }
+  }
+  private static void loadTournament() {
+    try {
+      tournament = TournamentStorage.load(TournamentStorage.FILE_PATH);
+      players.clear();
+      for (Player p : tournament.getPlayers()) {
+        players.add(p);
+      }
+      System.out.println("Loaded saved tournament.");
+    } catch (FileNotFoundException e) {
+
+    } catch (IOException e) {
+      System.out.println("Could not load saved tournament: " + e.getMessage());
     }
   }
 } 
