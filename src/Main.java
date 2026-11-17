@@ -6,6 +6,7 @@ public class Main {
   private static final Scanner scanner = new Scanner(System.in);
   private static final ArrayList<Player> players = new ArrayList<>();
   private static Tournament tournament;
+  private static RoundRobin roundRobin;
   public static void main(String[] args) {
     boolean running = true;
     loadTournament();
@@ -20,7 +21,7 @@ public class Main {
         case "3" -> 
           startSingleElimination();
         case "4" -> 
-          System.out.println("Coming soon.");
+          startRoundRobin();
         case "5" -> 
           enterScore();
         case "6" ->
@@ -98,9 +99,14 @@ public class Main {
       return;
     }
     System.out.println("Bracket generated!");
+    roundRobin = null;
     viewBracket();
   }
   private static void enterScore() {
+    if (roundRobin != null) {
+      enterRoundRobinScore();
+      return;
+    }
     if (tournament == null) {
       System.out.println("No tournament started yet.");
       return;
@@ -138,6 +144,10 @@ public class Main {
     }
   }
   private static void viewBracket() {
+    if (roundRobin != null) {
+      enterRoundRobinScore();
+      return;
+    }
     if (tournament == null) {
       System.out.println("No tournament started yet.");
       return;
@@ -165,12 +175,15 @@ public class Main {
     }
   }
   private static void saveTournament() {
-    if (tournament == null) {
-      System.out.println("No tournament to save.");
-      return;
-    }
     try {
-      TournamentStorage.save(tournament, TournamentStorage.FILE_PATH);
+      if (roundRobin != null) {
+        TournamentStorage.save(roundRobin, TournamentStorage.FILE_PATH);
+      } else if (tournament != null) {
+         TournamentStorage.save(tournament, TournamentStorage.FILE_PATH);
+      } else {
+        System.out.println("No tournament to save.");
+        return;
+      }
       System.out.println("Saved to " + TournamentStorage.FILE_PATH);
     } catch (IOException e) {
       System.out.println("Could not save: " + e.getMessage());
@@ -178,16 +191,88 @@ public class Main {
   }
   private static void loadTournament() {
     try {
-      tournament = TournamentStorage.load(TournamentStorage.FILE_PATH);
+      String format = TournamentStorage.readFormat(TournamentStorage.FILE_PATH);
       players.clear();
-      for (Player p : tournament.getPlayers()) {
-        players.add(p);
+      if (format.equals("ROUNDROBIN")) {
+        roundRobin =  TournamentStorage.loadRoundRobin(TournamentStorage.FILE_PATH);
+        for (Player p : roundRobin.getPlayers()) {
+          players.add(p);
+        }
+      } else {
+        tournament = TournamentStorage.load(TournamentStorage.FILE_PATH);
+        for (Player p : tournament.getPlayers()) {
+          players.add(p);
+        }
       }
       System.out.println("Loaded saved tournament.");
     } catch (FileNotFoundException e) {
 
     } catch (IOException e) {
       System.out.println("Could not load saved tournament: " + e.getMessage());
+    }
+  }
+  private static void startRoundRobin() {
+    if (players.size() < 2) {
+      System.out.println("Add at least 2 players first.");
+      return;
+    }
+    int bestOf = readInt("Best of (3 or 5): ");
+    try {
+      roundRobin = new RoundRobin(players, bestOf);
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+      return;
+    }
+    tournament = null;
+    System.out.println("Schedule generated!");
+    viewRoundRobin();
+  }
+  private static void enterRoundRobinScore() {
+    ArrayList<Match> matches = roundRobin.getMatches();
+    if (roundRobin.isFinished()) {
+      System.out.println("All matches are finished.");
+      return;
+    }
+    System.out.println("Matches waiting for a score:");
+    for (int i = 0; i < matches.size(); i++) {
+      Match m = matches.get(i);
+      if (!m.isPlayed()) {
+        System.out.println((i + 1) + ". " + m.getPlayer1().getName() + " vs. " + m.getPlayer2().getName());
+      }
+    }
+    int index = readInt("Match number: ") - 1;
+    if (index < 0 || index >= matches.size() || matches.get(index).isPlayed()) {
+      System.out.println("Pick a match from the list.");
+      return;
+    }
+    boolean recorded = false;
+    while (!recorded) {
+      int g1 = readInt("Games won by player 1: ");
+      int g2 = readInt("Games won by player 2: ");
+      try {
+        roundRobin.recordResult(index, g1, g2);
+        recorded = true;
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    if (roundRobin.isFinished()) {
+      System.out.println("All matches are finished.");
+    }
+  }
+  private static void viewRoundRobin() {
+    ArrayList<Match> matches = roundRobin.getMatches();
+    for (int m = 0; m < matches.size(); m++) {
+        Match match = matches.get(m);
+        String line = "Match " + (m + 1) + ": " + match.getPlayer1().getName() + " vs. " + m.getPlayer2().getName();
+        if (m.isPlayed()) {
+          line += (" [" m.getGames1() + "-" + m.getGames2() + "]");
+        }
+        System.out.println(line);
+    }
+    System.out.println("Records:");
+    for (Player p : roundRobin.getPlayers()) {
+      System.out.println(p);
     }
   }
 } 
