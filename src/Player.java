@@ -5,6 +5,12 @@ public class Player {
   public Player(String name) {
     this.name = name;
   }
+  //second constructor used for storing the records
+  public Player(String name, int wins, int losses) {
+    this.name = name;
+    this.wins = wins;
+    this.losses = losses;
+  }
   public String getName() {
     return name;
   }
