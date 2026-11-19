@@ -37,7 +37,7 @@ public class TournamentStorage {
           case "BESTOF" -> 
             bestOf = Integer.parseInt(parts[1]);
           case "PLAYER" -> {
-            Player p = new Player(parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+            Player p = new Player(parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Double.parseDouble(parts[4]));
             players.add(p);
             //adds key-value pair to hash map(name, player)
             byName.put(p.getName(), p);
@@ -76,7 +76,7 @@ public class TournamentStorage {
     //used writePlayers and writeMatch methods to avoid writing player and match lines 2x for roundrobin tournaments
     private static void writePlayers(PrintWriter out, ArrayList<Player> players) {
       for (Player p : players) {
-        out.println("PLAYER," + p.getName() + "," + p.getWins() + "," + p.getLosses());
+        out.println("PLAYER," + p.getName() + "," + p.getWins() + "," + p.getLosses() + "," + p.getRating());
       }
     }
     private static void writeMatch(PrintWriter out, Match m) {
