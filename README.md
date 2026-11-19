@@ -81,6 +81,10 @@ The app asks again until the score is valid.
 
 [Eisenhower Matrix](docs/Eisenhower%20Matrix.pdf)
 
+- [ ] Double Elimination
+- [x] Skill rating system (Elo)
+- [ ] A GUI or polished bracket display 
+
 ## Author
 
 Aman Jain

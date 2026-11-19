@@ -42,6 +42,7 @@ public class RoundRobin {
     }
     winner.recordWin();
     loser.recordLoss();
+    EloRating.update(winner, loser);
   }
   //games won minus games lost across all played matches, used for a tiebreaker
   public int getGameDifferential(Player p) {
