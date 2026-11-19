@@ -264,15 +264,21 @@ public class Main {
     ArrayList<Match> matches = roundRobin.getMatches();
     for (int m = 0; m < matches.size(); m++) {
         Match match = matches.get(m);
-        String line = "Match " + (m + 1) + ": " + match.getPlayer1().getName() + " vs. " + m.getPlayer2().getName();
-        if (m.isPlayed()) {
-          line += (" [" m.getGames1() + "-" + m.getGames2() + "]");
+        String line = "Match " + (m + 1) + ": " + match.getPlayer1().getName() + " vs. " + match.getPlayer2().getName();
+        if (match.isPlayed()) {
+          line += (" [" + match.getGames1() + "-" + match.getGames2() + "]");
         }
         System.out.println(line);
     }
-    System.out.println("Records:");
-    for (Player p : roundRobin.getPlayers()) {
-      System.out.println(p);
+    System.out.println("Standings:");
+    ArrayList<Player> standings = roundRobin.getStandings();
+    for (int i = 0; i < standings.size(); i++) {
+      Player p = standings.get(i);
+      System.out.println((i+1) + ". " + p.getName() + " " + p.getWins() + "-" + p.getLosses()
+                         + " (game diff " + roundRobin.getGameDifferential(p) + ")");
+    }
+    if (roundRobin.isFinished()) {
+      System.out.println("Winner: " + standings.get(0).getName());
     }
   }
-} 
+}
