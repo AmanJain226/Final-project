@@ -65,6 +65,7 @@ public class Tournament {
     }
     winner.recordWin();
     loser.recordLoss();
+    EloRating.update(winner, loser);
     if (isCurrentRoundComplete()) {
       advance();
     }
