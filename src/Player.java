@@ -26,6 +26,11 @@ public class Player {
   public void recordLoss() {
     losses++;
   }
+  //resets for new tournament
+  public void resetRecord() {
+    wins = 0;
+    losses = 0;
+  }
   public String toString() {
     return name + " (" + wins + "-" + losses+ ")";
   }
