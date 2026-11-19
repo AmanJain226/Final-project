@@ -2,8 +2,17 @@ public class Player {
   private final String name;
   private int wins;
   private int losses;
+  private static final double STARTING_RATING = 1000;
+  private double rating;
   public Player(String name) {
     this.name = name;
+  }
+  //third constructor used for the ratings
+  public Player(String name, int wins, int losses, double rating) {
+    this.name = name;
+    this.wins = wins;
+    this.losses = losses;
+    this.rating = rating;
   }
   //second constructor used for storing the records
   public Player(String name, int wins, int losses) {
@@ -31,7 +40,13 @@ public class Player {
     wins = 0;
     losses = 0;
   }
+  public double getRating() {
+    return rating;
+  }
+  public void setRating(double rating) {
+    this.rating = rating;
+  }
   public String toString() {
-    return name + " (" + wins + "-" + losses+ ")";
+    return name + " (" + wins + "-" + losses+ ", rating " + Math.round(rating) + ")";
   }
 }
