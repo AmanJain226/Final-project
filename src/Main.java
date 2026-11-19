@@ -275,7 +275,7 @@ public class Main {
     for (int i = 0; i < standings.size(); i++) {
       Player p = standings.get(i);
       System.out.println((i+1) + ". " + p.getName() + " " + p.getWins() + "-" + p.getLosses()
-                         + " (game diff " + roundRobin.getGameDifferential(p) + ")");
+                         + " (game diff " + roundRobin.getGameDifferential(p) + ", rating " + Math.round(p.getRating()) + ")");
     }
     if (roundRobin.isFinished()) {
       System.out.println("Winner: " + standings.get(0).getName());
