@@ -43,6 +43,33 @@ public class RoundRobin {
     winner.recordWin();
     loser.recordLoss();
   }
+  //games won minus games lost across all played matches, used for a tiebreaker
+  public int getGameDifferential(Player p) {
+    int diff = 0;
+    for (Match m : matches) {
+      if (!m.isPlayed()) {
+        continue;
+      }
+      if (m.getPlayer1() == p) {
+        diff += (m.getGames1() - m.getGames2());
+      } else if (m.getPlayer2() == p) {
+        diff += (m.getGames2() - m.getGames1());
+      }
+    }
+    return diff;
+  }
+  public ArrayList<Player> getStandings() {
+    ArrayList<Player> standings = new ArrayList<>(players);
+    //the sort uses a comparator here, where it gets 2 players, and sorts the players
+    //standings using the most wins first and ties broken by the game differential
+    standings.sort((a, b) -> {
+      if (a.getWins() != b.getWins()) {
+        return b.getWins() - a.getWins();
+      }
+      return getGameDifferential(b) - getGameDifferential(b);
+    };
+    return standings;
+  }
   public boolean isFinished() {
     for (Match m : matches) {
       if (!m.isPlayed()) {
