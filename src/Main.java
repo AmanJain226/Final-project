@@ -177,7 +177,7 @@ public class Main {
   private static void saveTournament() {
     try {
       if (roundRobin != null) {
-        TournamentStorage.save(roundRobin, TournamentStorage.FILE_PATH);
+        TournamentStorage.saveRoundRobin(roundRobin, TournamentStorage.FILE_PATH);
       } else if (tournament != null) {
          TournamentStorage.save(tournament, TournamentStorage.FILE_PATH);
       } else {
