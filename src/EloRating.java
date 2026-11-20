@@ -16,7 +16,7 @@ public class EloRating {
   public static void update(Player winner, Player loser) {
     double expectedWin = expectedScore(winner.getRating(), loser.getRating());
     double newWinner = winner.getRating() + K * (1 - expectedWin);
-    double newLoser = loser.getRatng() - K * (1 - expectedWin);
+    double newLoser = loser.getRating() - K * (1 - expectedWin);
     winner.setRating(newWinner);
     loser.setRating(newLoser);
   }
