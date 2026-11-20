@@ -12,7 +12,7 @@ public class EloRatingTest {
     Player loser = new Player("L");
     EloRating.update(winner, loser);
     assertEquals(1016, winner.getRating(), 0.001);
-    assertEquals(984, winner.getRating(), 0.001);
+    assertEquals(984, loser.getRating(), 0.001);
   }
 
   @Test
