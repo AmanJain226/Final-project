@@ -20,7 +20,7 @@ public class Tournament {
   public Tournament(ArrayList<Player> players, int bestOf, ArrayList<ArrayList<Match>> rounds, Player champion) {
     this.players = new ArrayList<>(players);
     this.bestOf = bestOf;
-    for (Player p : this.players()) {
+    for (Player p : this.players) {
       p.resetRecord();
     }
     for (ArrayList<Match> round : rounds) {
