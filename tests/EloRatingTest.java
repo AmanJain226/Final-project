@@ -35,4 +35,3 @@ public class EloRatingTest {
     assertEquals(2150, a.getRating() + b.getRating(), 0.001);
   }
 }
-    Pl
