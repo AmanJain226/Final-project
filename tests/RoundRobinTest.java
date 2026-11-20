@@ -31,7 +31,7 @@ public class RoundRobinTest {
 
   @Test
   public void playedMatchCannotBeScoredTwice() {
-    RoundRobin rr = new RoundRobin(new String[]{"A", "B"}), 3);
+    RoundRobin rr = new RoundRobin(makePlayers(new String[]{"A", "B"}), 3);
     rr.recordResult(0, 2, 0);
     assertThrows(IllegalArgumentException.class, () -> rr.recordResult(0, 2, 0));
   }
