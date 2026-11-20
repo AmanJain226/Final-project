@@ -7,7 +7,7 @@ public class EloRating {
   //the 400.0 is a scale factor which means that a 400-point gape means the higher
   //rated player is roughly 10 more times likely to win
   public static double expectedScore(double ratingA, double ratingB) {
-    return 1.0 / (1.0 + Math.pow(10, ratingB - ratingA)) / 400;
+    return 1.0 / (1.0 + Math.pow(10, (ratingB - ratingA) / 400));
   }
   //the point rating system is structured so that if a player
   //who already has a strong rating wins, their points go up just a little
