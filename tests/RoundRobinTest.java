@@ -12,13 +12,13 @@ public class RoundRobinTest {
 
   @Test
   public void fourPlayersMakeSixMatches() {
-    RoundRobin rr = new RoundRobin(makePlayers("A", "B", "C", "D"), 3);
-    assertEquals(6, rr.getMatches.size());
+    RoundRobin rr = new RoundRobin(makePlayers(new String[]{"A", "B", "C", "D"}), 3);
+    assertEquals(6, rr.getMatches().size());
   }
 
   @Test
   public void tiedWinsAreBrokenByGameDifferential() {
-     RoundRobin rr = new RoundRobin(makePlayers("A", "B", "C"), 3);
+     RoundRobin rr = new RoundRobin(makePlayers(new String[]{"A", "B", "C"}), 3);
      rr.recordResult(0, 2, 0);
      rr.recordResult(1, 1, 2);
      rr.recordResult(2, 2, 1);
@@ -31,7 +31,7 @@ public class RoundRobinTest {
 
   @Test
   public void playedMatchCannotBeScoredTwice() {
-    RoundRobin rr = new RoundRobin(makePlayers("A", "B"), 3);
+    RoundRobin rr = new RoundRobin(new String[]{"A", "B"}), 3);
     rr.recordResult(0, 2, 0);
     assertThrows(IllegalArgumentException.class, () -> rr.recordResult(0, 2, 0));
   }
