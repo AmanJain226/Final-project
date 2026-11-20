@@ -68,7 +68,7 @@ public class RoundRobin {
         return b.getWins() - a.getWins();
       }
       return getGameDifferential(b) - getGameDifferential(b);
-    };
+    });
     return standings;
   }
   public boolean isFinished() {
