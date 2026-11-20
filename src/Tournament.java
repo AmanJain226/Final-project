@@ -11,7 +11,7 @@ public class Tournament {
     }
     this.players = new ArrayList<>(players);
     this.bestOf = bestOf;
-    for (Player p : this.players()) {
+    for (Player p : this.players) {
       p.resetRecord();
     }
     rounds.add(buildRound(this.players));
@@ -24,7 +24,7 @@ public class Tournament {
       p.resetRecord();
     }
     for (ArrayList<Match> round : rounds) {
-      this.rounds.add(rounds);
+      this.rounds.add(round);
     }
     this.champion = champion;
   }
