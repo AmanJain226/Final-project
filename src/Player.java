@@ -5,7 +5,7 @@ public class Player {
   private static final double STARTING_RATING = 1000;
   private double rating;
   public Player(String name) {
-    this.name = name;
+    this(name, 0, 0, STARTING_RATING);
   }
   //third constructor used for the ratings
   public Player(String name, int wins, int losses, double rating) {
